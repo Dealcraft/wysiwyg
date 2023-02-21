@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "outFile": "./dist/wysiwyg.js",
+    "target": "ES3",
+    "module": "amd",
+    "removeComments": true,
+    "sourceMap": true
+  },
+  "include": ["src/**/*"],
+  "watchOptions": {
+    "watchDirectory": "useFsEvents",
+    "excludeDirectories": ["**/node_modules", "**/dist"]
+  }
+}

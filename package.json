@@ -1,0 +1,23 @@
+{
+  "name": "wysiwyg-functions",
+  "version": "0.0.1",
+  "description": "wysiwyg-functions",
+  "main": "dist/wysiwyg.js",
+  "scripts": {
+    "dev": "npx tsc --watch",
+    "build": "npx tsc --clean && npx tsc --force --build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dealcraft/wysiwyg.git"
+  },
+  "author": "Dealcraft",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Dealcraft/wysiwyg/issues"
+  },
+  "homepage": "https://github.com/Dealcraft/wysiwyg#readme",
+  "devDependencies": {
+    "typescript": "^4.9.5"
+  }
+}
