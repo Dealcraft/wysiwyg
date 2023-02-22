@@ -395,6 +395,10 @@ export class Wysiwyg {
         this.toggleActiveClass(command)
 
         if(this.history.commands.includes(command)) this.pushHistory(this.element.innerHTML)
+        if(this.options.emitInputEventOnChange) {
+            const event = new InputEvent('input')
+            this.element.dispatchEvent(event)
+        }
     }
 
     private bold() {

@@ -67,13 +67,13 @@ At this point your wysiwyg editor should work properly if not so please report t
 The wysiwyg class provides a couple of options to customize the behavior of your editor. If you want to change the default options pass an object containing the changed options as the second parameter to the class constructor.
 
 ### Available options
-| option key                               | default         | type              | description                                                                                                                                                                      |
-|------------------------------------------|-----------------|-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| renderTemplate                           | false           | boolean           | If set to true, the constructor will render the template provided via the `template` option inside the Wysiwyg element instead of just mounting itself to the existing component |
-| template                                 | wysiwygTemplate | TemplateElement[] | The template rendered when the `renderTemplate` option is set to true                                                                                                            |
-| logging                                  | true            | boolean           | If set to false, the Wysiwyg class won't log any event's to the console                                                                                                          |
-| historySize                              | 10              | integer           | The max size of the wysiwyg history. A history entry is added to the history if the last user interaction is longer than 1 second ago                                            |
-| emitInputEventOnChange (not implemented) | true            | boolean           | If set to false, the html editor element doesn't emit a input event when one of the buttons is pressed                                                                           |
+| option key             | default         | type              | description                                                                                                                                                                      |
+|------------------------|-----------------|-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| renderTemplate         | false           | boolean           | If set to true, the constructor will render the template provided via the `template` option inside the Wysiwyg element instead of just mounting itself to the existing component |
+| template               | wysiwygTemplate | TemplateElement[] | The template rendered when the `renderTemplate` option is set to true                                                                                                            |
+| logging                | true            | boolean           | If set to false, the Wysiwyg class won't log any event's to the console                                                                                                          |
+| historySize            | 10              | integer           | The max size of the wysiwyg history. A history entry is added to the history if the last user interaction is longer than 1 second ago                                            |
+| emitInputEventOnChange | true            | boolean           | If set to false, the html editor element doesn't emit a input event when one of the buttons is pressed                                                                           |
 
 
 ## Templating
