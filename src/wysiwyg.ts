@@ -11,7 +11,7 @@ export type TemplateElementAttribute = Object & {
     value: string
 }
 
- export type TemplateElement = {
+export type TemplateElement = {
     type: string
     classes: string[]
     children?: TemplateElement[]

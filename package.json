@@ -1,5 +1,5 @@
 {
-  "name": "@wysiwyg-functions/core",
+  "name": "wysiwyg-functions",
   "description": "wysiwyg-functions",
   "version": "0.0.1",
   "author": "Dealcraft <david@dealcraft.de> (https://dealcraft.de)",
@@ -20,7 +20,7 @@
     "bundle:umd": "rollup dist/index.js --file dist/index.umd.js --format umd --name sayHello",
     "bundle:umd:min": "terser --ecma 6 --compress --mangle -o dist/index.umd.min.js -- dist/index.umd.js && gzip -9 -c dist/index.umd.min.js > dist/index.umd.min.js.gz",
     "prepublish": "npm run build && npm pack",
-    "publish": "npm run prepublish && npm publish --access public"
+    "publish": "npm run prepublish && npm publish"
   },
   "repository": {
     "type": "git",
