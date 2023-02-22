@@ -1,0 +1,59 @@
+.wysiwyg-functions-template {
+    --gap-size: 1rem;
+    --group-gap-size: calc(1/2 * var(--gap-size));
+    border: 1px solid #b4b4b4;
+    border-radius: 10px;
+    overflow: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.wysiwyg-functions-template .wysiwyg-functions-toolbar {
+    padding: 10px;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap-size)
+}
+
+.wysiwyg-functions-template .wysiwyg-functions-toolbar .wysiwyg-functions-toolbar-group {
+    display: flex;
+    gap: var(--group-gap-size);
+    padding-right: var(--gap-size);
+
+    border-right: 1px solid #b4b4b4;
+}
+
+.wysiwyg-functions-template .wysiwyg-functions-toolbar .wysiwyg-functions-toolbar-group:last-child {
+    border-right: none;
+}
+
+.wysiwyg-functions-template .wysiwyg-functions-toolbar .wysiwyg-functions-toolbar-button {
+    appearance: none;
+    padding: 5px;
+    background: none;
+    border: none;
+    color: #232323;
+    border-radius: 5px;
+    transition: all .3s ease-in-out;
+    cursor: pointer;
+}
+
+.wysiwyg-functions-template .wysiwyg-functions-toolbar .wysiwyg-functions-toolbar-button:hover {
+    background: #d3d3d3
+}
+
+.wysiwyg-functions-template .wysiwyg-functions-toolbar .wysiwyg-functions-toolbar-button.active {
+    background: #b4b4b4;
+}
+
+.wysiwyg-functions-template .wysiwyg-functions-toolbar .wysiwyg-functions-toolbar-button.active:hover {
+    background: #919191;
+}
+
+.wysiwyg-functions-template .wysiwyg-functions-editor {
+    background: #f8f8f8;
+    padding: 20px;
+    outline: none;
+}
