@@ -40,6 +40,12 @@
     cursor: pointer;
 }
 
+.wysiwyg-functions-template .wysiwyg-functions-toolbar .wysiwyg-functions-toolbar-button[data-command="undo"],
+.wysiwyg-functions-template .wysiwyg-functions-toolbar .wysiwyg-functions-toolbar-button[data-command="redo"] {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
 .wysiwyg-functions-template .wysiwyg-functions-toolbar .wysiwyg-functions-toolbar-button:hover {
     background: #d3d3d3
 }
@@ -48,8 +54,20 @@
     background: #b4b4b4;
 }
 
+.wysiwyg-functions-template .wysiwyg-functions-toolbar .wysiwyg-functions-toolbar-button.active[data-command="undo"],
+.wysiwyg-functions-template .wysiwyg-functions-toolbar .wysiwyg-functions-toolbar-button.active[data-command="redo"] {
+    opacity: 1;
+    background: none;
+    pointer-events: all;
+}
+
 .wysiwyg-functions-template .wysiwyg-functions-toolbar .wysiwyg-functions-toolbar-button.active:hover {
     background: #919191;
+}
+
+.wysiwyg-functions-template .wysiwyg-functions-toolbar .wysiwyg-functions-toolbar-button.active[data-command="undo"]:hover,
+.wysiwyg-functions-template .wysiwyg-functions-toolbar .wysiwyg-functions-toolbar-button.active[data-command="redo"]:hover {
+    background: #d3d3d3;
 }
 
 .wysiwyg-functions-template .wysiwyg-functions-editor {
