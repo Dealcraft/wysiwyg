@@ -30,8 +30,10 @@ type WysiwygButtons = Object & {
 type WysiwygHistoryEntry = string
 
 type WysiwygHistory = Object & {
-    pointer: number,
+    pointer: number
     entries: WysiwygHistoryEntry[]
+    timeout: number | null
+    commands: WysiwygCommand[]
 }
 
 const template: TemplateElement[] = [
@@ -290,12 +292,20 @@ export class Wysiwyg {
     private buttons: WysiwygButtons = {}
     private history: WysiwygHistory = {
         pointer: 0,
-        entries: []
+        entries: [],
+        timeout: null,
+        commands: ['bold', 'italic', 'underline', 'strike', 'headline', 'code']
     }
-    private historyTimeout: number | null = null
     private isUndo: boolean = false
     private isRedo: boolean = false
-    private historyCommands: WysiwygCommand[] = ['bold', 'italic', 'underline', 'strike', 'headline', 'code']
+    private commandElements = {
+        bold: 'strong',
+        italic: 'em',
+        underline: 'u',
+        strike: 's',
+        heading: 'h1',
+        code: 'code'
+    }
 
 
     /**
@@ -329,6 +339,10 @@ export class Wysiwyg {
         this.log('Creating history')
         this.createHistory()
         this.log('Finished creating history')
+
+        this.log('Adding selection change event listener')
+        this.addSelectionChangeEventlistener()
+        this.log('Finished adding selection change event listener')
 
         this.log(`Successfully mounted on ${elementSelector}`)
     }
@@ -372,10 +386,19 @@ export class Wysiwyg {
         if (!target.dataset || !target.dataset.command)
             return this.error(`No command registered for element`)
 
-        let command: WysiwygCommand = target.dataset.command as WysiwygCommand
+        let command = target.dataset.command as WysiwygCommand
+        if(!this.buttons.hasOwnProperty(command)) return this.error(`Command ${command} not registered`)
+
         this.log(`Invoking command ${command}`)
         this[command]()
-        if(command in this.historyCommands) this.pushHistory(this.element.innerHTML)
+
+        this.toggleActiveClass(command)
+
+        if(this.history.commands.includes(command)) this.pushHistory(this.element.innerHTML)
+        if(this.options.emitInputEventOnChange) {
+            const event = new InputEvent('input')
+            this.element.dispatchEvent(event)
+        }
     }
 
     private bold() {
@@ -452,21 +475,35 @@ export class Wysiwyg {
 
     private undo() {
         if(!this.isUndoAvailable()) return this.log('Nothing to undo')
+        this.toggleActiveClass('undo', true, true)
         this.isUndo = true
-        this.history.pointer--
+        this.changeHistoryPointer(-1)
         this.element.innerHTML = this.history.entries[this.history.pointer]
     }
 
     private redo() {
         if(!this.isRedoAvailable()) return this.log('Nothing to redo')
         this.isRedo = true
-        this.history.pointer++
+        this.changeHistoryPointer(1)
         this.element.innerHTML = this.history.entries[this.history.pointer]
+    }
+
+    private toggleActiveClass(command: WysiwygCommand, force?: boolean, allowHistoryButtons: boolean = false) {
+        if(!allowHistoryButtons && (command === 'redo' || command === 'undo')) return
+        const button = this.buttons[command]
+        const element = button.element
+        element.classList.toggle(button.activeClass, force)
+    }
+
+    private toggleAllActiveClasses(force?: boolean) {
+        for (const command of Object.keys(this.buttons)) {
+            this.toggleActiveClass(command as WysiwygCommand, force)
+        }
     }
 
     private isInParents(elementName: string, element: HTMLElement | Node) {
 
-        while(element.nodeName.toLowerCase() !== this.element.nodeName) {
+        while(element.nodeName.toLowerCase() !== this.element.nodeName.toLowerCase()) {
             if (!element.parentElement) return false
             if (element.parentElement.tagName.toLowerCase() === elementName) return true
             element = element.parentElement
@@ -478,7 +515,7 @@ export class Wysiwyg {
     private getParentOfType(elementName: string, element: HTMLElement | Node) {
         if (!this.isInParents(elementName, element)) return null
 
-        while(element.nodeName.toLowerCase() !== this.element.nodeName) {
+        while(element.nodeName.toLowerCase() !== this.element.nodeName.toLowerCase()) {
             if (!element.parentElement) return null
             if (element.parentElement.nodeName.toLowerCase() === elementName) return element.parentElement
             element = element.parentElement
@@ -490,13 +527,23 @@ export class Wysiwyg {
     private getBeforeParentOfType(elementName: string, element: HTMLElement | Node) {
         if (!this.isInParents(elementName, element)) return null
 
-        while(element.nodeName.toLowerCase() !== this.element.nodeName) {
+        while(element.nodeName.toLowerCase() !== this.element.nodeName.toLowerCase()) {
             if (!element.parentElement) return null
             if (element.parentElement.nodeName.toLowerCase() === elementName) return element
             element = element.parentElement
         }
 
         return null
+    }
+
+    private isInEditor(element: HTMLElement | Node) {
+        while(element.nodeName.toLowerCase() !== document.documentElement.nodeName.toLowerCase()) {
+            if (!element.parentElement) return false
+            if (element.parentElement.tagName.toLowerCase() === this.element.tagName.toLowerCase()) return true
+            element = element.parentElement
+        }
+
+        return false
     }
 
     private wrapRange(element: HTMLElement) {
@@ -541,11 +588,14 @@ export class Wysiwyg {
     }
 
     private isUndoAvailable() {
+        this.toggleActiveClass('undo', this.history.pointer > 0, true)
         return this.history.pointer > 0
     }
 
     private isRedoAvailable() {
-        return this.history.pointer < (this.options.historySize - 1) && this.history.pointer < (this.history.entries.length - 1)
+        let available = this.history.pointer < (this.options.historySize - 1) && this.history.pointer < (this.history.entries.length - 1)
+        this.toggleActiveClass('redo', available, true)
+        return available
     }
 
     private getSelection() {
@@ -553,15 +603,41 @@ export class Wysiwyg {
         return selection
     }
 
+    private addSelectionChangeEventlistener() {
+        document.addEventListener('selectionchange', this.selectionChangeEvent)
+    }
+
+    private selectionChangeEvent = (event: any) => {
+        const selection = this.getSelection()
+        if(!selection) return
+        if(!selection.anchorNode) return
+        if(!this.isInEditor(selection.anchorNode!)) return this.toggleAllActiveClasses(false)
+
+        for(const command of Object.keys(this.buttons)) {
+            // @ts-ignore
+            if(this.isInParents(this.commandElements[command], selection.anchorNode)) {
+                this.toggleActiveClass(command as WysiwygCommand, true)
+            } else {
+                this.toggleActiveClass(command as WysiwygCommand, false)
+            }
+        }
+    }
+
     private editorEvent = (event: any) => {
         event.preventDefault()
-        if(this.historyTimeout) window.clearTimeout(this.historyTimeout)
+        if(this.history.timeout) window.clearTimeout(this.history.timeout)
         if(this.isUndo) return this.isUndo = false
         if(this.isRedo) return this.isRedo = false
 
-        this.historyTimeout = setTimeout(() => {
+        this.history.timeout = setTimeout(() => {
             this.pushHistory(event.target.innerHTML)
         }, 1000)
+    }
+
+    private changeHistoryPointer(diff: number) {
+        this.history.pointer = this.history.pointer + diff
+        this.isUndoAvailable()
+        this.isRedoAvailable()
     }
 
     private pushHistory(entry: WysiwygHistoryEntry) {
@@ -570,11 +646,14 @@ export class Wysiwyg {
         }
 
         this.history.entries.push(entry)
-        this.history.pointer ++
+        this.changeHistoryPointer(1)
         if (this.history.entries.length >= this.options.historySize) {
             this.history.entries.shift()
             this.history.pointer = 9
         }
+
+        this.isUndoAvailable()
+        this.isRedoAvailable()
     }
 
     private createHistory() {
