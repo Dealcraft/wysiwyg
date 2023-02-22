@@ -1,12 +1,22 @@
 {
   "compilerOptions": {
+    "declaration": true,
+    "lib": ["es6", "dom", "dom.iterable"],
+    "module": "es6",
+    "moduleResolution": "node",
+    "removeComments": true,
+    "sourceMap": true,
     "strict": true,
-    "outFile": "./dist/wysiwyg.js",
-    "target": "ES3",
-    "module": "amd",
-    "sourceMap": true
+    "target": "es6",
+    "outDir": "./dist"
   },
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules"
+  ],
   "watchOptions": {
     "watchDirectory": "useFsEvents",
     "excludeDirectories": ["**/node_modules", "**/dist"]
