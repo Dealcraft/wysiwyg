@@ -1,7 +1,7 @@
 {
   "name": "wysiwyg-functions",
   "description": "wysiwyg-functions",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": "Dealcraft <david@dealcraft.de> (https://dealcraft.de)",
   "main": "dist/index.js",
   "module": "dist/index.min.mjs",
