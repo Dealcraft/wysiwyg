@@ -1,0 +1,28 @@
+name: Publish Package to npmjs
+
+on:
+  workflow_dispatch:
+    inputs:
+        tag:
+          description: 'Publishing tag'
+          required: true
+          default: 'latest'
+          
+  release:
+    types: [published]
+
+jobs:
+  publish-npm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          registry-url: https://registry.npmjs.org/
+      - run: npm ci
+      - run: npm publish --tag=$tag
+        name: 'Publish to npm registry'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          tag: ${{ (github.event.release.prerelease == true && 'beta' || 'latest') || github.event.inputs.tag }}
