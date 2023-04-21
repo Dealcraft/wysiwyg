@@ -1,0 +1,37 @@
+name: Publish package to GitHub Packages
+on:
+    workflow_dispatch:
+        inputs:
+            tag:
+                description: 'Publishing tag'
+                required: true
+                default: 'latest'
+                
+    release:
+        types: [published]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
+        steps:
+            - uses: actions/checkout@v3
+            # Setup .npmrc file to publish to GitHub Packages
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 16
+                  registry-url: https://npm.pkg.github.com
+                  scope: "@Dealcraft"
+            - run: node ./gpr/pre-publish.js
+              name: 'Run gpr pre-publish procedure'
+            - run: npm ci
+            - run: npm publish --registry=https://npm.pkg.github.com/ --scope=@Dealcraft --tag=$tag
+              name: 'Publish package to github package registry'
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  tag: ${{ (github.event.release.prerelease == true && 'beta' || 'latest') || github.event.inputs.tag || 'latest' }}
+            - run: node ./gpr/post-publish.js
+              name: 'Run gpr post-publish procedure'
